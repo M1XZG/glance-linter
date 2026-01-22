@@ -1,23 +1,25 @@
-# Glance Config
+# Glance YAML Linter
 
-Helper notes for linting / validating the Glance YAML configuration before deploying.
+Purpose: catch broken Glance dashboard configs _before_ the container starts. This tool mirrors the `$include` layout style from the official [glanceapp/glance](https://github.com/glanceapp/glance) repo: it expands every `$include` under `config/glance.yml`, checks YAML structure/indentation, and reports exactly where things fail (file, line, column) with 5 lines of context and a caret pointing to the offending column.
 
-## Setup
-- From this directory, create and activate the virtualenv:
-  - `python3 -m venv .venv`
-  - `source .venv/bin/activate`
-- Install dependencies: `pip install -r scripts/requirements.txt`
+## Quick start
+1) Create and activate a virtualenv (local, ignored by git):
+   - `python3 -m venv .venv`
+   - `source .venv/bin/activate`
+2) Install deps: `pip install -r scripts/requirements.txt`
 
-## Validate the config
-- Run the validator (uses `config/glance.yml` as the entrypoint):
+## Running the linter
+- Validate using the default entrypoint (`config/glance.yml`):
   - `python scripts/validate_glance.py`
-- Get a fully expanded YAML (after resolving all `$include` files):
+- Write the fully expanded YAML (handy for debugging or diffing):
   - `python scripts/validate_glance.py -o /tmp/glance-expanded.yml`
 
-## What it checks
-- YAML syntax and indentation errors with file, line, and column.
-- Missing `$include` targets and include cycles.
+## What it flags
+- YAML scanner/parser errors (indentation, bad lists/mappings, tabs, malformed tokens)
+- Missing `$include` targets
+- Include cycles
+- Offending line/column highlighted with 5 lines of surrounding context
 
-## Housekeeping
-- `.venv/`, `__pycache__/`, and `*.pyc` are already ignored via `.gitignore`.
+## Notes
+- `.venv/`, `__pycache__/`, `*.pyc`, and `.env` are ignored by `.gitignore`.
 - Deactivate the venv when done: `deactivate`.
