@@ -160,19 +160,48 @@ def main() -> None:
     parser.add_argument(
         "--entry",
         "-e",
-        default="config/glance.yml",
+        default=None,
         type=Path,
-        help="entrypoint YAML file",
+        help="entrypoint YAML file (used if config.txt is absent)",
     )
     parser.add_argument(
         "--output",
         "-o",
+        default=None,
         type=Path,
-        help="optional path to write the fully expanded YAML",
+        help="optional path to write the fully expanded YAML (used if config.txt is absent)",
     )
     args = parser.parse_args()
 
-    sys.exit(validate(args.entry, args.output))
+    # Load config.txt if present (takes precedence over CLI defaults/flags)
+    repo_root = Path(__file__).resolve().parent.parent
+    config_path = repo_root / "config.txt"
+    entry_from_cfg: Path | None = None
+    output_from_cfg: Path | None = None
+
+    if config_path.exists():
+        try:
+            for raw in config_path.read_text(encoding="utf-8").splitlines():
+                line = raw.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" not in line:
+                    continue
+                key, value = line.split("=", 1)
+                key = key.strip().lower()
+                value = value.strip()
+                if key == "entry" and value:
+                    entry_from_cfg = (config_path.parent / value).resolve() if not Path(value).is_absolute() else Path(value)
+                if key == "output" and value:
+                    output_from_cfg = (config_path.parent / value).resolve() if not Path(value).is_absolute() else Path(value)
+        except OSError as exc:  # pragma: no cover
+            sys.stderr.write(f"Could not read config.txt: {exc}\n")
+
+    # Precedence: config.txt > CLI > built-in default
+    entry = entry_from_cfg or args.entry or Path("config/glance.yml")
+    output = output_from_cfg if entry_from_cfg or output_from_cfg else args.output
+
+    sys.exit(validate(entry, output))
 
 
 if __name__ == "__main__":

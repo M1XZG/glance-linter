@@ -1,0 +1,4 @@
+# Linter configuration
+# Paths can be absolute or relative to this file.
+entry=config/glance.yml
+output=/tmp/glance-expanded.yml
