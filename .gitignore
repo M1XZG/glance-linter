@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .env
 config.txt
+build/
+dist/
+*.egg-info/
+.coverage

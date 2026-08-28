@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "glance-linter"
+version = "0.1.0"
+description = "Source-aware YAML linter for Glance dashboard configurations"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Robert McKenzie" },
+]
+keywords = ["glance", "dashboard", "yaml", "linter", "self-hosted"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/M1XZG/glance-linter"
+Issues = "https://github.com/M1XZG/glance-linter/issues"
+Source = "https://github.com/M1XZG/glance-linter"
+
+[project.scripts]
+glance-lint = "glance_linter.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
